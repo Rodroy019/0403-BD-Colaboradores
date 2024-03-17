@@ -3,18 +3,20 @@ import Button from 'react-bootstrap/Button'
 import Alerta from './Alerta'
 import { BaseColaboradores } from '../assets/js/BaseColaboradores'
 
-const Formulario = ({ listaColaboradores, setListaColaboradores }) => {
+const Formulario = (props) => {
   const [form, setForm] = useState({ nombre: '', correo: '', edad: '', cargo: '', telefono: '' })
   const [alerta, setAlerta] = useState(null)
+  const [listaColaboradores, setListaColaboradores] = useState(BaseColaboradores)
   function enviarFormulario (e) {
     e.preventDefault()
-    if (form.nombre === '' || form.email === '' || form.edad === '' || form.cargo === '' || form.telefono === '') {
+    if (form.nombre === '' || form.correo === '' || form.edad === '' || form.cargo === '' || form.telefono === '') {
       setAlerta(<Alerta variant='warning' descripcion='Por favor, completa todos los campos antes de continuar.' />)
       return
     }
-    const nuevoColaborador = { id: BaseColaboradores.length + 1, nombre: form.nombre, correo: form.correo, edad: form.edad, cargo: form.cargo, telefono: form.telefono }
-    BaseColaboradores.push(nuevoColaborador)
-    setListaColaboradores([...listaColaboradores, nuevoColaborador])
+    const nuevoColaborador = { id: listaColaboradores.length + 1, nombre: form.nombre, correo: form.correo, edad: form.edad, cargo: form.cargo, telefono: form.telefono }
+    const listaActualizada = [...listaColaboradores, nuevoColaborador]
+    setListaColaboradores(listaActualizada)
+    props.agregarColaborador(nuevoColaborador)
     setForm({ nombre: '', correo: '', edad: '', cargo: '', telefono: '' })
     setAlerta(<Alerta variant='success' descripcion='¡El Colaborador a sido Agregado exitosamente!' />)
   }
@@ -31,6 +33,7 @@ const Formulario = ({ listaColaboradores, setListaColaboradores }) => {
     <>
       <div className='componentes'>
         <form onSubmit={enviarFormulario}>
+          <h2>Agregar Colaborador</h2>
           <input
             type='text'
             placeholder='Nombre'

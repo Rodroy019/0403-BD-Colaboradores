@@ -1,16 +1,23 @@
 import Table from 'react-bootstrap/Table'
 import Button from 'react-bootstrap/Button'
 import Alerta from './Alerta'
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { BaseColaboradores } from '../assets/js/BaseColaboradores'
+import Formulario from './Formulario'
 
 function Listado () {
   const [listaColaboradores, setListaColaboradores] = useState(BaseColaboradores)
   const [alerta, setAlerta] = useState(null)
-  function eliminarColaborador (id) {
-    const nuevaLista = listaColaboradores.filter(colaborador => colaborador.id !== id)
-    setListaColaboradores(nuevaLista)
-    setAlerta(<Alerta variant='danger' descripcion='Colaborador eliminado exitosamente' />)
+  const [buscar, setBuscar] = useState('')
+  const eliminarColaborador = (id) => {
+    setListaColaboradores(listaColaboradores.filter(colaborador => colaborador.id !== id))
+    setAlerta(<Alerta variant='danger' descripcion='¡El Colaborador a sido Eliminado exitosamente!' />)
+  }
+  const buscarColaborador = (event) => {
+    setBuscar(event.target.value)
+  }
+  const agregarColaborador = (nuevoColaborador) => {
+    setListaColaboradores([...listaColaboradores, nuevoColaborador])
   }
   useEffect(() => {
     let timeout
@@ -24,7 +31,9 @@ function Listado () {
 
   return (
     <div className='componentes'>
-      <Table bordered responsive size='sm'>
+      <input type='text' placeholder='Buscar por Nombre' onChange={buscarColaborador} />
+      <hr />
+      <Table striped bordered responsive size='sm'>
         <thead>
           <tr>
             <th>Nombre</th>
@@ -36,21 +45,23 @@ function Listado () {
           </tr>
         </thead>
         <tbody>
-          {listaColaboradores.map(colaborador => (
-            <tr key={colaborador.id}>
-              <td>{colaborador.nombre}</td>
-              <td>{colaborador.correo}</td>
-              <td>{colaborador.edad}</td>
-              <td>{colaborador.cargo}</td>
-              <td>{colaborador.telefono}</td>
-              <td><Button variant='danger' onClick={() => eliminarColaborador(colaborador.id)}>x</Button></td>
-            </tr>
-          ))}
+          {listaColaboradores
+            .filter((colaborador) => colaborador.nombre.toLowerCase().includes(buscar.toLowerCase()))
+            .map((colaborador) => (
+              <tr key={colaborador.id}>
+                <td>{colaborador.nombre}</td>
+                <td>{colaborador.correo}</td>
+                <td>{colaborador.edad}</td>
+                <td>{colaborador.cargo}</td>
+                <td>{colaborador.telefono}</td>
+                <td><Button variant='danger' onClick={() => eliminarColaborador(colaborador.id)}>x</Button></td>
+              </tr>
+            ))}
         </tbody>
       </Table>
+      <Formulario agregarColaborador={agregarColaborador} />
       {alerta}
     </div>
-
   )
 }
 
